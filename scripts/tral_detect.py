@@ -12,13 +12,14 @@ from tral import configuration
 from tral.sequence import sequence
 
 
-def detect_trs(fasta_file, output_dir, detectors=None, write=True):
+def detect_trs(fasta_file, output_dir, seq_type=None, detectors=None, write=True):
     logging.config.fileConfig(config_file("logging.ini"))
     log = logging.getLogger('root')
 
     CONFIG_GENERAL = configuration.Configuration.instance().config
     CONFIG = CONFIG_GENERAL["repeat_list"]
-    seq_type = CONFIG_GENERAL["sequence_type"]
+    if not seq_type:
+        seq_type = CONFIG_GENERAL["sequence_type"]
     if not detectors:
         detectors = CONFIG_GENERAL["sequence"]["repeat_detection"][seq_type]
 
@@ -41,9 +42,6 @@ def detect_trs(fasta_file, output_dir, detectors=None, write=True):
     seq_counter = 0
     for record in sequences:
         seq_name = record.id
-        print(record.id)
-        print(seq_name)
-        exit()
 
         # Check whether output for this genomic region already exists. If so, skip
         if seq_name in finished_sequences:
@@ -105,6 +103,9 @@ def cla_parser():
         "--fasta_file", "-f", type=str, required=True, help="Path to input fasta file"
     )
     parser.add_argument(
+        "--sequence_type", "-s", type=str, required=True, help="Type of sequence that is being analyzed (currently supports 'AA' and 'DNA')"
+    )
+    parser.add_argument(
         "--output_dir", "-o", type=str, required=True, help="Path to directory where output TRs will be deposited"
     )
     parser.add_argument(
@@ -129,17 +130,7 @@ def main():
     if args.detectors:
         if not all([i in allowed_detectors for i in args.detectors]):
             raise ValueError(f"Unrecognized detector specified, allowed detectors: \n\t{allowed_detectors}")
-    # print(args.detectors)
     detect_trs(args.fasta_file, args.output_dir, detectors=args.detectors)
-    # except:
-    #     print("got here")
-    #     exit()
-    #     test_path = "/root/qa/data/apc.fasta"
-    #     test_output = "/root/qa/results"
-    #     # detect_trs(test_path, test_output, write=False)
-    #     detectors = ["T-REKS", "XSTREAM"]
-    #     detect_trs(test_path, test_output, write=False, detectors=detectors)
-
 
 if __name__ == "__main__":
     main()

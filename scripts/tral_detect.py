@@ -30,7 +30,9 @@ def detect_trs(fasta_file, output_dir, seq_type=None, detectors=None, write=True
     Tandem repeat detectors: 
         {}
     -----------------------------------------------
-    Parameters can be set in ~/.tral/config.ini
+    Parameters can be set in ~/.tral/config.ini or
+    at the command line
+    
     Commencing run
     -----------------------------------------------
     """.format(seq_type, detectors))
